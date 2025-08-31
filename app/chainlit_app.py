@@ -43,7 +43,7 @@ async def on_chat_start():
     ]
     
     await cl.Message(
-        content="🌾 **Rice Disease Agent** ready! Ask me about rice pathology, diseases, or integrated pest management.\n\n💡 *I prioritize evidence from the [Rice Diseases Online Resource](https://rice-diseases.irri.org/contents), with web search and academic papers as backup.*",
+        content="🌾 **Rice Disease Agent** ready! Ask me about rice pathology, diseases, or integrated pest management.\n\n💡 *I prioritize documents from the [IRRI Rice Diseases Online Resource](https://rice-diseases.irri.org/contents), with web search and academic papers as backup.*",
         actions=actions
     ).send()
 

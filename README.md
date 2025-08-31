@@ -1,69 +1,73 @@
-# 🤖 AI LLM Engineering - Day 9: A2A Protocol Agent
+# 🌾 Rice Disease Agent - A2A Protocol Implementation
 
-A sophisticated LangGraph agent implementation featuring the **A2A (Agent-to-Agent) Protocol** with intelligent helpfulness evaluation and comprehensive tool integration.
+A sophisticated rice disease diagnosis and management agent built with LangGraph and the **A2A (Agent-to-Agent) Protocol**. This intelligent system provides expert guidance on rice pathology, disease identification, and integrated pest management (IPM) strategies through both a web API and an intuitive Chainlit chat interface.
 
 ## 🚀 Quick Start
 
 ```bash
 # Clone and setup
-git clone <repository-url>
-cd day_9-A2A
+git clone <your-repo-url>
+cd rice-disease-agent
 
-# Run quickstart script
-chmod +x quickstart.sh
-./quickstart.sh
+# Install dependencies
+uv sync
 
-# Start the agent server
+# Set up environment variables
+cp .env.example .env
+# Edit .env with your API keys
+
+# Start the A2A agent server
 uv run python -m app
 
-# Test the agent (in another terminal)
+# In another terminal, start the Chainlit UI
+uv run chainlit run app/chainlit_app.py
+
+# Test the agent API
 uv run python app/test_client.py
 ```
 
 ## ✨ Key Features
 
+- **🌾 Rice Disease Expertise**: Specialized knowledge base for rice pathology and IPM
 - **🤖 LangGraph Agent**: Advanced agent architecture with state management
 - **🔗 A2A Protocol**: Full compliance with Agent-to-Agent communication standards
-- **📊 Helpfulness Evaluation**: Intelligent response quality assessment with loop protection
-- **🔍 Multi-Tool Integration**: Web search, academic papers, and document retrieval
-- **📚 RAG System**: Retrieval-Augmented Generation with vector storage
-- **🌊 Streaming Support**: Real-time response streaming for better UX
-- **⚡ FastAPI Server**: High-performance async server implementation
+- **💬 Chainlit UI**: User-friendly chat interface for rice disease consultation
+- **🔍 Multi-Tool Integration**: Web search (Tavily), scientific papers (arXiv), and RAG
+- **📚 RAG System**: Retrieval from rice diseases documents
+- **🌊 Streaming Support**: Real-time response streaming
+- **☁️ Cloud Deploy Ready**: Configured for Render deployment
 
 ## 🏗️ Architecture Overview
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│   User Input   │───▶│  LangGraph Agent │───▶│  Tool Execution │
+│  Chainlit UI   │───▶│  A2A Server      │───▶│  LangGraph      │
+│  (Frontend)    │    │  (Backend API)   │    │  Agent          │
 └─────────────────┘    └──────────────────┘    └─────────────────┘
                                 │                        │
-                                ▼                        │
-                       ┌──────────────────┐              │
-                       │ Helpfulness Eval│              │
-                       │   (A2A Loop)    │              │
-                       └──────────────────┘              │
-                                │                        │
-                                ▼                        │
-                       ┌──────────────────┐              │
-                       │  Response or    │◀──────────────┘
-                       │  Continue Loop  │
-                       └──────────────────┘
+                                ▼                        ▼
+                       ┌──────────────────┐    ┌─────────────────┐
+                       │  JSON-RPC 2.0   │    │  Tool Execution │
+                       │  Communication  │    │  • Web Search   │
+                       └──────────────────┘    │  • ArXiv        │
+                                              │  • RAG System   │
+                                              └─────────────────┘
 ```
 
-## 🛠️ Available Tools
+## 🛠️ Rice Disease Tools
 
-| Tool | Description | Use Case |
-|------|-------------|----------|
-| **🌐 Web Search** | Real-time internet search via Tavily | Current events, live information |
-| **📚 Academic Papers** | arXiv research paper search | Research, literature review |
-| **📄 Document Retrieval** | RAG system for loaded documents | Internal knowledge, policies |
+| Tool | Description | Rice Disease Use Case |
+|------|-------------|----------------------|
+| **🌐 Web Search** | Real-time search via Tavily API | Current disease outbreaks, new treatments |
+| **📚 Academic Papers** | arXiv research paper search | Latest research on rice pathology |
+| **📄 Document RAG** | Rice disease knowledge retrieval | Disease identification from symptoms |
 
 ## 📋 Prerequisites
 
 - **Python 3.12+**
-- **uv package manager** (auto-installed by quickstart script)
+- **uv package manager**
 - **API Keys**:
-  - OpenAI API Key
+  - OpenAI API Key (required)
   - Tavily API Key (optional, for web search)
 
 ## ⚙️ Configuration
@@ -78,163 +82,169 @@ OPENAI_API_KEY=your_openai_api_key_here
 
 # Optional (for enhanced functionality)
 TAVILY_API_KEY=your_tavily_api_key_here
-TOOL_LLM_URL=https://api.openai.com/v1
-TOOL_LLM_NAME=gpt-4o-mini
-OPENAI_CHAT_MODEL=gpt-4o-mini
+A2A_BASE_URL=http://localhost:10000
 RAG_DATA_DIR=data
+ENVIRONMENT=development
 ```
 
-### Document Setup for RAG
+### Rice Diseases Documents Setup
 
 ```bash
-# Create data directory
-mkdir -p data
-
-# Add your PDF documents
-cp /path/to/your/documents/*.pdf data/
+# The data directory contains rice disease PDFs
+ls data/
+# Rice diseases: Biology and selected management practices.pdf
+# (add your own rice disease documents)
 ```
 
 ## 🚀 Running the Project
 
-### 1. Development Server
+### 1. Development (Local)
 
 ```bash
-# Start the A2A protocol server
+# Terminal 1: Start A2A server
 uv run python -m app
+# Server runs on http://localhost:10000
 
-# Custom host/port
-uv run python -m app --host 0.0.0.0 --port 8080
-```
+# Terminal 2: Start Chainlit UI
+uv run chainlit run app/chainlit_app.py
+# UI available at http://localhost:8000
 
-### 2. LangGraph Development Server
-
-```bash
-# Start LangGraph dev server
-uv run langgraph dev
-
-# Access points:
-# API: http://localhost:2024
-# Studio: https://smith.langchain.com/studio?baseUrl=http://localhost:2024
-```
-
-### 3. Test the Agent
-
-```bash
-# Run the test client
+# Terminal 3: Test the API
 uv run python app/test_client.py
+```
 
-# Or use direct API calls
-curl -X POST http://localhost:10000/v1/tasks \
-  -H "Content-Type: application/json" \
-  -d '{
-    "assistant_id": "agent",
-    "messages": [{
-      "role": "user",
-      "content": "What are the latest developments in AI?"
-    }]
-  }'
+### 2. Production Deployment (Render)
+
+```bash
+# Deploy A2A server (uses render.yaml)
+git push origin main
+# Render auto-deploys from render.yaml
+
+# Deploy Chainlit UI as separate service
+# Set start command: uv run chainlit run app/chainlit_app.py --host 0.0.0.0 --port $PORT
+# Set A2A_BASE_URL to your deployed A2A server URL
 ```
 
 ## 🔧 Project Structure
 
 ```
-📦 day_9-A2A/
-├── 📁 app/                           # Main application package
-│   ├── 📄 __init__.py               # Package initialization
-│   ├── 📄 __main__.py               # A2A server entry point
-│   ├── 📄 agent.py                  # Core agent with streaming
-│   ├── 📄 agent_executor.py         # A2A protocol executor
-│   ├── 📄 agent_graph_with_helpfulness.py  # LangGraph + evaluation
-│   ├── 📄 rag.py                    # RAG implementation
-│   ├── 📄 tools.py                  # Tool belt configuration
-│   ├── 📄 test_client.py            # Test client
-│   └── 📄 README.md                 # Detailed technical docs
-├── 📄 pyproject.toml                # Project configuration
-├── 📄 setup.py                      # Environment setup
-├── 📄 quickstart.sh                 # Quick start script
-├── 📄 check_env.py                  # Environment validation
-└── 📄 README.md                     # This file
+📦 rice-disease-agent/
+├── 📁 app/                          # Main application package
+│   ├── 📄 __init__.py              # Package initialization
+│   ├── 📄 __main__.py              # A2A server entry point
+│   ├── 📄 agent.py                 # Core rice disease agent
+│   ├── 📄 agent_executor.py        # A2A protocol executor
+│   ├── 📄 agent_graph_with_helpfulness.py  # LangGraph implementation
+│   ├── 📄 chainlit_app.py          # Chainlit chat interface
+│   ├── 📄 rag.py                   # RAG for rice disease docs
+│   ├── 📄 tools.py                 # Tool belt (web search, arXiv, RAG)
+│   └── 📄 test_client.py           # API test client
+├── 📁 data/                        # Rice disease documents
+│   ├── 📄 rice-diseases-guide.pdf
+│   └── 📄 *.pdf                    # Your rice disease PDFs
+├── 📄 render.yaml                  # Render deployment config
+├── 📄 pyproject.toml               # Project dependencies
+├── 📄 check_env.py                 # Environment validation
+└── 📄 README.md                    # This file
 ```
 
-## 🧪 Example Usage
+## 🧪 Rice Disease Agent Usage
 
-### Web Search Query
+### Disease Diagnosis
 ```
-User: "What are the latest AI developments in 2024?"
-Agent: [Uses Tavily web search] → Provides current information
-```
-
-### Academic Research
-```
-User: "Find recent papers on multimodal transformers"
-Agent: [Uses ArXiv search] → Returns relevant research papers
+User: "My rice plants have brown spots on leaves with yellow halos. What disease is this?"
+Agent: 🔬 **Diagnosis:** Likely bacterial leaf blight (Xanthomonas oryzae)
+        🔍 **Differentials:** Consider leaf blast if lesions are diamond-shaped
+        ⚡ **Immediate Actions:** Remove infected plants, improve drainage
 ```
 
-### Document Analysis
+### IPM Recommendations
 ```
-User: "What do our policy documents say about requirements?"
-Agent: [Uses RAG system] → Retrieves relevant document sections
+User: "What IPM strategy should I use for rice blast in irrigated lowland?"
+Agent: 🌾 **Integrated Management:**
+        • Use resistant varieties (Pi genes)
+        • Balanced nitrogen application
+        • Water management (avoid continuous flooding)
+        • Fungicide rotation if needed
 ```
 
-### Multi-Tool Integration
-```
-User: "Compare recent research with our internal guidelines"
-Agent: [Combines ArXiv + RAG] → Comprehensive analysis
-```
+### Quick Actions in Chainlit UI
+- **🦠 Common Rice Diseases**: Get regional disease information
+- **🔍 Identify Symptoms**: Structured symptom assessment
+- **🌾 IPM Strategies**: Integrated management recommendations
 
 ## 🔄 A2A Protocol Features
 
-### Helpfulness Evaluation Loop
+### JSON-RPC 2.0 Communication
+The agent uses standard JSON-RPC messages for communication:
 
-The agent implements an intelligent evaluation system:
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "message/send",
+  "params": {
+    "message": {
+      "role": "user",
+      "parts": [{"kind": "text", "text": "Symptoms of rice blast?"}],
+      "message_id": "unique-id"
+    }
+  },
+  "id": "request-id"
+}
+```
 
-1. **Process Request**: User input is processed through the agent
-2. **Tool Execution**: Relevant tools are called as needed
-3. **Response Generation**: Agent generates comprehensive response
-4. **Helpfulness Check**: A2A evaluation determines response quality
-5. **Loop Decision**: Continue improving or finalize response
-
-### Loop Protection
-
-- **Maximum Iterations**: 10 loops to prevent infinite cycles
-- **Smart Termination**: Automatic exit on satisfactory responses
-- **State Management**: Maintains conversation context throughout
+### Context Management
+- Maintains conversation history across interactions
+- Preserves disease diagnosis context for follow-up questions
+- Supports multi-turn consultations
 
 ## 🎯 Customization
 
-### Adding New Tools
+### Adding Rice Disease Knowledge
 
 ```python
-# In app/tools.py
-from langchain_core.tools import tool
+# Add documents to data/ directory
+cp new-rice-disease-guide.pdf data/
 
-@tool
-def my_custom_tool(query: str) -> str:
-    """Description of what your tool does"""
-    # Implementation here
-    return result
-
-# Add to tool belt
-def get_tool_belt() -> List:
-    return [
-        # ... existing tools
-        my_custom_tool
-    ]
+# RAG system automatically indexes new PDFs
+# Restart server to reload document index
 ```
 
-### Customizing Helpfulness Criteria
-
-Modify evaluation criteria in `agent_graph_with_helpfulness.py`:
+### Customizing Response Formatting
 
 ```python
-prompt_template = """
-A helpful response should:
-- [Your custom criteria]
-- Be factually accurate
-- Address the user's specific need
-- Use appropriate tools when necessary
-"""
+# In app/chainlit_app.py
+def format_response(text: str) -> str:
+    replacements = {
+        "Diagnosis:": "🔬 **Diagnosis:**",
+        "Treatment:": "💊 **Treatment:**",
+        # Add more rice-specific formatting
+    }
 ```
+
+## 🌐 Deployment
+
+### Render Cloud Deployment
+
+1. **Deploy A2A Server**:
+   ```bash
+   # Uses render.yaml configuration
+   # Automatically deploys on git push
+   ```
+
+2. **Deploy Chainlit UI**:
+   - Create new Render web service
+   - Build: `uv sync`
+   - Start: `uv run chainlit run app/chainlit_app.py --host 0.0.0.0 --port $PORT`
+   - Set `A2A_BASE_URL` environment variable
+
+3. **Environment Variables**:
+   ```
+   OPENAI_API_KEY=your_key
+   TAVILY_API_KEY=your_key
+   A2A_BASE_URL=deployment URL
+   RAG_DATA_DIR=data
+   ```
 
 ## 🐛 Troubleshooting
 
@@ -242,74 +252,60 @@ A helpful response should:
 
 | Issue | Solution |
 |-------|----------|
-| **Missing API Keys** | Check `.env` file and run `python check_env.py` |
-| **Tool Failures** | Verify API keys and internet connectivity |
-| **RAG Errors** | Ensure documents exist in `data/` directory |
-| **Import Errors** | Run `uv sync` to install dependencies |
+| **Chainlit can't connect to A2A** | Check A2A_BASE_URL and ensure A2A server is running |
+| **Missing disease knowledge** | Verify PDFs are in `data/` directory |
+| **API key errors** | Run `python check_env.py` to verify environment |
+| **Render deployment fails** | Check start command syntax and logs |
 
-### Debug Mode
-
-```bash
-# Enable detailed logging
-export LANGCHAIN_VERBOSE=true
-
-# Or in Python
-import logging
-logging.basicConfig(level=logging.DEBUG)
-```
-
-### Quick Diagnostics
+### Debug Commands
 
 ```bash
 # Check environment
 uv run python check_env.py
 
-# Test tool availability
-uv run python -c "from app.tools import get_tool_belt; print([tool.name for tool in get_tool_belt()])"
+# Test A2A server health
+curl http://localhost:10000/health
 
-# Test RAG system
-uv run python -c "from app.rag import get_rag_graph; rag = get_rag_graph(); print('RAG loaded successfully')"
+# Test tools
+uv run python -c "from app.tools import get_tool_belt; print([tool.name for tool in get_tool_belt()])"
 ```
 
 ## 📊 Performance Tips
 
-- **Chunk Size**: Optimize RAG chunk size for your documents
-- **Model Selection**: Choose appropriate OpenAI model for your use case
-- **Tool Limits**: Adjust `max_results` in tool configurations
-- **Caching**: Consider persistent vector storage for large document collections
+- **Document Chunking**: Optimize for rice disease content (scientific papers, guides)
+- **Model Selection**: Use `gpt-4o-mini` for cost-effective responses
+- **Caching**: RAG vectors are cached for faster retrieval
+- **Render Free Tier**: Monitor 750-hour monthly limit
 
-## 🔮 Advanced Features
+## 🔮 Future Enhancements
 
-### Multi-Agent Communication
-Extend the A2A protocol for agent-to-agent communication with specialized domain agents.
+- **Image Analysis**: Add support for disease photo analysis
+- **Geographic Adaptation**: Regional disease prevalence data
+- **Weather Integration**: Climate-based disease risk assessment
+- **Mobile App**: Extend Chainlit UI for field use
+- **Multi-language**: Support for local languages
 
-### Custom Evaluation Metrics
-Implement additional evaluation criteria like factual accuracy, completeness, and source quality.
+## 📚 Rice Disease Resources
 
-### External Service Integration
-Connect to external APIs and services through custom tool implementations.
-
-## 📚 Additional Resources
-
-- **Detailed Technical Docs**: See `app/README.md` for comprehensive implementation details
-- **LangGraph Documentation**: [https://langchain-ai.github.io/langgraph/](https://langchain-ai.github.io/langgraph/)
-- **A2A Protocol**: [https://github.com/a2a-protocol](https://github.com/a2a-protocol)
-- **OpenAI API**: [https://platform.openai.com/docs](https://platform.openai.com/docs)
+- **Primary Source**: [Rice Diseases Online Resource](https://rice-diseases.irri.org/contents)
+- **IRRI Knowledge Bank**: Rice disease identification guides
+- **Academic Research**: Latest pathology research via arXiv integration
+- **IPM Guidelines**: Integrated pest management strategies
 
 ## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+2. Add rice disease expertise or tools
+3. Test with real disease scenarios
+4. Submit pull request with examples
 
 ## 📄 License
 
-This project is part of the AI LLM Engineering course. See the course materials for licensing information.
+This project is open source. See LICENSE file for details.
 
 ---
 
-**Built with ❤️ using LangGraph, OpenAI, and the A2A Protocol**
+**🌾 Built for Rice Farmers and Agronomists**
+*Combining AI expertise with agricultural knowledge for better rice disease management*
 
-*For detailed technical implementation, see `app/README.md`*
+**Tech Stack**: LangGraph • OpenAI • Chainlit • A2A Protocol • Render Cloud

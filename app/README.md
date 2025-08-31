@@ -1,6 +1,6 @@
 # 🤖 LangGraph Agent Implementation
 
-This directory contains the complete implementation of a LangGraph agent with A2A protocol and helpfulness evaluation. This README provides detailed technical documentation for understanding and extending the codebase.
+This directory contains the complete implementation of a LangGraph agent with A2A protocol and helpfulness evaluation integrated into a Chainlit app. This README provides detailed technical documentation for understanding and extending the codebase.
 
 ## 📁 File Structure
 
@@ -14,6 +14,8 @@ This directory contains the complete implementation of a LangGraph agent with A2
 ├── 📄 rag.py                                # RAG implementation with Qdrant vectorstore
 ├── 📄 tools.py                              # Tool belt configuration (Tavily, ArXiv, RAG)
 ├── 📄 test_client.py                        # Test client for the agent API
+# In the File Structure section, line 15:
+├── 📄 chainlit_app.py                       # Chainlit UI for rice disease consultation
 └── 📄 README.md                             # This file
 ```
 
