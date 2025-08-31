@@ -7,10 +7,7 @@ import logging
 
 load_dotenv()
 
-if os.getenv("ENVIRONMENT") == "production":
-    BASE_URL = "https://rice-disease-agent.onrender.com"
-else:
-    BASE_URL = os.getenv("A2A_BASE_URL", "http://localhost:10000")
+BASE_URL = os.getenv("A2A_BASE_URL", "http://localhost:10000")
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +31,7 @@ def format_response(text: str) -> str:
 @cl.on_chat_start
 async def on_chat_start():
     httpx_client = httpx.AsyncClient(
-        timeout=httpx.Timeout(180.0),
+        timeout=httpx.Timeout(300.0),
         transport=httpx.AsyncHTTPTransport(retries=3),
     )
     cl.user_session.set("httpx", httpx_client)
