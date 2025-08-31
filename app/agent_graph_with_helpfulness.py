@@ -53,19 +53,19 @@ def helpfulness_node(state: Dict[str, Any], model) -> Dict[str, Any]:
     final_response = state["messages"][-1]
 
     prompt_template = """
-  Given an initial query and a final response, determine if the final response is extremely helpful or not. 
-  A helpful response should:
-  - Provide accurate and relevant information
-  - Be complete and address the user's specific need
-  - Use appropriate tools when necessary
-  
-  Please indicate helpfulness with a 'Y' and unhelpfulness as an 'N'.
+    Given an initial query and a final response, determine if the final response is extremely helpful or not. 
+    A helpful response should:
+    - Provide accurate and relevant information
+    - Be complete and address the user's specific need
+    - Use appropriate tools when necessary
 
-  Initial Query:
-  {initial_query}
+    Please indicate helpfulness with a 'Y' and unhelpfulness as an 'N'.
 
-  Final Response:
-  {final_response}"""
+    Initial Query:
+    {initial_query}
+
+    Final Response:
+    {final_response}"""
 
     helpfulness_prompt_template = PromptTemplate.from_template(prompt_template)
     helpfulness_chain = (

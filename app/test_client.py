@@ -116,7 +116,13 @@ async def main() -> None:
             'message': {
                 'role': 'user',
                 'parts': [
-                    {'kind': 'text', 'text': 'What are the latest developments in artificial intelligence?'}
+                    {
+                        'kind': 'text',
+                        'text': (
+                            'Using the local rice pathology PDFs and other resources, summarize early symptoms and integrated management for false smut. '
+                            'Cite sources as [filename.pdf, p. N] or APA style. If not in the library, respond: I don\'t know.'
+                        ),
+                    }
                 ],
                 'message_id': uuid4().hex,
             },
@@ -136,7 +142,11 @@ async def main() -> None:
                 'parts': [
                     {
                         'kind': 'text',
-                        'text': 'Find me recent papers on transformer architectures',
+                        'text': (
+                            'Northern Ghana, irrigated lowland rice at maximum tillering. '
+                            'Lesions are spindle-shaped with gray centers and brown margins on leaves; ~15% leaf area affected after a week of high humidity. '
+                            'Provide likely diagnosis, immediate actions, and key IPM measures. Cite sources with file and page numbers, or APA style.'
+                        ),
                     }
                 ],
                 'message_id': uuid4().hex,
@@ -156,7 +166,15 @@ async def main() -> None:
         second_send_message_payload_multiturn: dict[str, Any] = {
             'message': {
                 'role': 'user',
-                'parts': [{'kind': 'text', 'text': 'Can you summarize the key findings?'}],
+                'parts': [
+                    {
+                        'kind': 'text',
+                        'text': (
+                            'Update: We now observe panicle neck rot and poor grain fill in hotspots. '
+                            'Revise diagnosis and give integrated management and monitoring steps. Cite sources.'
+                        ),
+                    }
+                ],
                 'message_id': uuid4().hex,
                 'task_id': task_id,
                 'context_id': context_id,
@@ -175,7 +193,24 @@ async def main() -> None:
         # --8<-- [start:send_message_streaming]
 
         streaming_request = SendStreamingMessageRequest(
-            id=str(uuid4()), params=MessageSendParams(**send_message_payload)
+            id=str(uuid4()),
+            params=MessageSendParams(
+                **{
+                    'message': {
+                        'role': 'user',
+                        'parts': [
+                            {
+                                'kind': 'text',
+                                'text': (
+                                    'Outline diagnostic symptoms and IPM for rice black streaked dwarf (RBSD) and southern RBSD in Africa, '
+                                    'including vector management. Cite [filename.pdf, p. N] or APA style.'
+                                ),
+                            }
+                        ],
+                        'message_id': uuid4().hex,
+                    }
+                }
+            ),
         )
 
         stream_response = client.send_message_streaming(streaming_request)

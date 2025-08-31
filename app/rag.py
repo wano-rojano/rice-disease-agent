@@ -5,7 +5,7 @@ This module builds an in-memory RAG pipeline that:
 - Splits documents into chunks using a token-aware splitter.
 - Embeds chunks with OpenAI and stores vectors in an in-memory Qdrant store.
 - Exposes a LangChain Tool `retrieve_information` that retrieves relevant
-  context and generates a response constrained to that context.
+- context and generates a response constrained to that context.
 """
 from __future__ import annotations
 
@@ -79,14 +79,21 @@ def _build_rag_graph(data_dir: str):
     )
     retriever = qdrant_vectorstore.as_retriever()
 
-    # Prompt and model
     human_template = (
-        "\n#CONTEXT:\n{context}\n\nQUERY:\n{query}\n\n"
-        "Use the provide context to answer the provided user query. "
-        "Only use the provided context to answer the query. If you do not know the answer, or it's not contained in the provided context respond with \"I don't know\""
+        "You are a rice pathology/IPM assistant. Write a concise, actionable answer using the provided contexts."
+        "Answer using ONLY the text in CONTEXT. Do not use outside knowledge.\n"
+        "If the answer is not in CONTEXT, respond exactly: I don't know\n"
+        "Prioritize PDF evidence over web and arXiv. Cite PDFs as [filename.pdf, p. N]; "
+        "cite web as [URL]; cite arXiv as (arXiv:ID). If a claim is only from web/arXiv, make that clear. "
+        "If PDFs do not cover the query, say so briefly before using web/arXiv. Do not invent citations."
+        "# CONTEXT:\n{context}\n\n# QUERY:\n{query}\n"
     )
-    chat_prompt = ChatPromptTemplate.from_messages([("human", human_template)])
-    generator_llm = ChatOpenAI(model=os.environ.get("OPENAI_CHAT_MODEL", "gpt-4.1-nano"))
+
+    chat_prompt = ChatPromptTemplate.from_messages([
+        ("system", "Ground answers strictly in the provided CONTEXT and follow the citation rules."),
+        ("human", human_template),
+    ])
+    generator_llm = ChatOpenAI(model=os.environ.get("OPENAI_CHAT_MODEL", "gpt-4.1-nano"), temperature=0)
 
     def retrieve(state: _RAGState) -> _RAGState:
         retrieved_docs = retriever.invoke(state["question"]) if retriever else []
@@ -94,8 +101,20 @@ def _build_rag_graph(data_dir: str):
 
     def generate(state: _RAGState) -> _RAGState:
         generator_chain = chat_prompt | generator_llm | StrOutputParser()
+
+        # Format CONTEXT with filename and page to steer correct inline citations
+        docs = state.get("context", [])
+        formatted_context_parts = []
+        for d in docs:
+            meta = getattr(d, "metadata", {}) or {}
+            src = os.path.basename(meta.get("source", "")) or "unknown.pdf"
+            page = meta.get("page")
+            header = f"[{src}, p. {page}]" if page is not None else f"[{src}]"
+            formatted_context_parts.append(f"{header}\n{d.page_content}")
+        formatted_context = "\n\n".join(formatted_context_parts) if formatted_context_parts else ""
+
         response_text = generator_chain.invoke(
-            {"query": state["question"], "context": state.get("context", [])}
+            {"query": state["question"], "context": formatted_context}
         )
         return {"response": response_text}  # type: ignore
 
@@ -116,10 +135,33 @@ def _get_rag_graph():
 def retrieve_information(
     query: Annotated[str, "query to ask the retrieve information tool"]
 ):
-    """Use Retrieval Augmented Generation to retrieve information about student loan policies"""
+    """Retrieve rice disease and IPM information from the local PDF library using RAG"""
     graph = _get_rag_graph()
     result = graph.invoke({"question": query})
     # Prefer returning the response string if available
     if isinstance(result, dict) and "response" in result:
         return result["response"]
     return result
+
+def test_rag_system():
+    """Test function to debug RAG issues"""
+    import os
+    data_dir = os.environ.get("RAG_DATA_DIR", "data")
+    print(f"RAG_DATA_DIR: {data_dir}")
+    print(f"Directory exists: {os.path.exists(data_dir)}")
+    
+    if os.path.exists(data_dir):
+        files = [f for f in os.listdir(data_dir) if f.endswith('.pdf')]
+        print(f"PDF files found: {files}")
+    
+    try:
+        # Test the RAG tool
+        result = retrieve_information("What is rice blast?")
+        print(f"RAG result: {result}")
+    except Exception as e:
+        print(f"RAG error: {e}")
+        import traceback
+        traceback.print_exc()
+
+if __name__ == "__main__":
+    test_rag_system()
