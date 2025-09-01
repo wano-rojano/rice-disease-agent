@@ -14,7 +14,6 @@ This directory contains the complete implementation of a LangGraph agent with A2
 ├── 📄 rag.py                                # RAG implementation with Qdrant vectorstore
 ├── 📄 tools.py                              # Tool belt configuration (Tavily, ArXiv, RAG)
 ├── 📄 test_client.py                        # Test client for the agent API
-# In the File Structure section, line 15:
 ├── 📄 chainlit_app.py                       # Chainlit UI for rice disease consultation
 └── 📄 README.md                             # This file
 ```
@@ -70,9 +69,10 @@ graph.add_node("helpfulness", _helpfulness_node)  # A2A evaluation
 def get_tool_belt() -> List:
     tavily_tool = TavilySearchResults(max_results=5)  # Web search
     return [
+        retrieve_information,  # RAG document retrieval
         tavily_tool,           # Real-time web search
-        ArxivQueryRun(),       # Academic paper search
-        retrieve_information   # RAG document retrieval
+        PubmedQueryRun(),      # Academic paper search
+        ArxivQueryRun()        # Academic paper search
     ]
 ```
 

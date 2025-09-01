@@ -22,7 +22,7 @@ class ResponseFormat(BaseModel):
 
 
 class Agent:
-    """Agent - a rice disease diagnosis and integrated management assistant with access to web search, academic papers, and RAG."""
+    """Agent - a rice disease diagnosis and integrated management assistant with access to RAG, web search, and academic papers."""
 
     SYSTEM_INSTRUCTION = (
         "You are an AI agronomy assistant, a 'rice doctor' focused on rice disease diagnosis and integrated management (IPM)."

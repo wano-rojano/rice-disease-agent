@@ -32,7 +32,7 @@ uv run python app/test_client.py
 - **🤖 LangGraph Agent**: Advanced agent architecture with state management
 - **🔗 A2A Protocol**: Full compliance with Agent-to-Agent communication standards
 - **💬 Chainlit UI**: User-friendly chat interface for rice disease consultation
-- **🔍 Multi-Tool Integration**: Web search (Tavily), scientific papers (arXiv), and RAG
+- **🔍 Multi-Tool Integration**: Web search (Tavily), scientific papers (PubMed and arXiv), and RAG
 - **📚 RAG System**: Retrieval from rice diseases documents
 - **🌊 Streaming Support**: Real-time response streaming
 - **☁️ Cloud Deploy Ready**: Configured for Render deployment
@@ -40,16 +40,16 @@ uv run python app/test_client.py
 ## 🏗️ Architecture Overview
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
-│  Chainlit UI   │───▶│  A2A Server      │───▶│  LangGraph      │
-│  (Frontend)    │    │  (Backend API)   │    │  Agent          │
-└─────────────────┘    └──────────────────┘    └─────────────────┘
+┌─────────────────┐     ┌──────────────────┐     ┌─────────────────┐
+│  Chainlit UI    │───▶│  A2A Server       │───▶│  LangGraph      │
+│  (Frontend)     │     │  (Backend API)   │     │  Agent          │
+└─────────────────┘     └──────────────────┘     └─────────────────┘
                                 │                        │
                                 ▼                        ▼
-                       ┌──────────────────┐    ┌─────────────────┐
-                       │  JSON-RPC 2.0   │    │  Tool Execution │
-                       │  Communication  │    │  • Web Search   │
-                       └──────────────────┘    │  • ArXiv        │
+                       ┌──────────────────┐   ┌─────────────────┐
+                       │  JSON-RPC 2.0    │   │  Tool Execution │
+                       │  Communication   │   │  • Web Search   │
+                       └──────────────────┘   │  • PubMed, arXiv│
                                               │  • RAG System   │
                                               └─────────────────┘
 ```
@@ -57,9 +57,9 @@ uv run python app/test_client.py
 ## 🛠️ Rice Disease Tools
 
 | Tool | Description | Rice Disease Use Case |
-|------|-------------|----------------------|
-| **🌐 Web Search** | Real-time search via Tavily API | Current disease outbreaks, new treatments |
-| **📚 Academic Papers** | arXiv research paper search | Latest research on rice pathology |
+|------|-------------|-----------------------|
+| **🌐 Web Search**  | Real-time search via Tavily API | Current disease outbreaks, new treatments |
+| **📚 Academic Papers** | PubMed and arXiv research paper search | Latest research on rice pathology |
 | **📄 Document RAG** | Rice disease knowledge retrieval | Disease identification from symptoms |
 
 ## 📋 Prerequisites
@@ -137,7 +137,7 @@ git push origin main
 │   ├── 📄 agent_graph_with_helpfulness.py  # LangGraph implementation
 │   ├── 📄 chainlit_app.py          # Chainlit chat interface
 │   ├── 📄 rag.py                   # RAG for rice disease docs
-│   ├── 📄 tools.py                 # Tool belt (web search, arXiv, RAG)
+│   ├── 📄 tools.py                 # Tool belt (web search, PubMed, arXiv, RAG)
 │   └── 📄 test_client.py           # API test client
 ├── 📁 data/                        # Rice disease documents
 │   ├── 📄 rice-diseases-guide.pdf
@@ -288,6 +288,7 @@ uv run python -c "from app.tools import get_tool_belt; print([tool.name for tool
 ## 📚 Rice Disease Resources
 
 - **Primary Source**: [Rice Diseases Online Resource](https://rice-diseases.irri.org/contents)
+Mew TW, Hibino H, Savary S, Vera Cruz CM, Opulencia R, Hettel GP, eds. 2018. Rice diseases: Biology and selected management practices. Los Baños (Philippines): International Rice Research Institute. PDF e-book. rice-diseases.irri.org. 
 - **IRRI Knowledge Bank**: Rice disease identification guides
 - **Academic Research**: Latest pathology research via arXiv integration
 - **IPM Guidelines**: Integrated pest management strategies
@@ -301,7 +302,7 @@ uv run python -c "from app.tools import get_tool_belt; print([tool.name for tool
 
 ## 📄 License
 
-This project is open source. See LICENSE file for details.
+Parts of this project are from PSI AI LLM Engineering course. See the course materials for licensing information.
 
 ---
 

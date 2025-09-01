@@ -18,7 +18,7 @@ def format_response(text: str) -> str:
         "Differentials:": "🔍 **Differentials:**", 
         "Immediate actions:": "⚡ **Immediate Actions:**",
         "Integrated management:": "🌾 **Integrated Management:**",
-        "Monitoring:": "👁️ **Monitoring:**",
+        "Monitoring:": "🕵🏼 **Monitoring:**",
         "Information needed:": "❓ **Information Needed:**",
         "Sources:": "📚 **Sources:**"
     }
@@ -43,11 +43,10 @@ async def on_chat_start():
     ]
     
     await cl.Message(
-        content="🌾 **Rice Disease Agent** ready! Ask me about rice pathology, diseases, or integrated pest management.\n\n💡 *I prioritize documents from the [IRRI Rice Diseases Online Resource](https://rice-diseases.irri.org/contents), with web search and academic papers as backup.*",
+        content="🌾 **Rice Disease Agent** ready! Ask me about rice pathology, diseases, or integrated pest management.\n\n💡 *I prioritize references from the [IRRI Rice Diseases Online Resource](https://rice-diseases.irri.org/contents), with web search and academic papers as backup.*",
         actions=actions
     ).send()
 
-# Fixed action callbacks with correct parameter names
 @cl.action_callback("common_diseases")
 async def on_common_diseases(action):
     await cl.Message(content="What are the most common rice diseases in your region? Please mention your location (country/region) and growing conditions (upland/lowland, irrigated/rainfed).").send()
